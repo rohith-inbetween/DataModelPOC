@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:datagraph="http://www.springframework.org/schema/data/graph"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/jdbc 
+                           http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+                           http://www.springframework.org/schema/data/jpa
+                           http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+							http://www.springframework.org/schema/context
+							http://www.springframework.org/schema/context/spring-context-2.5.xsd
+    						">
+
+
+	<context:component-scan base-package="com.cs.*" />
+	<jpa:repositories base-package="com.cs.repository" />
+
+ <context:annotation-config/>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/javaSqlTest" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
+	</bean>
+
+
+	<bean id="jpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="showSql" value="true"></property>
+		<property name="generateDdl" value="true"></property>
+		<property name="database" value="MYSQL"></property>
+	</bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+		<!-- <property name="mappingResources" value="file:src/main/resources/orm.xml"/> -->
+		<!-- spring based scanning for entity classes -->
+		<property name="packagesToScan" value="com.cs.layer3.repository.business.*" />
+	</bean>
+
+	<bean id="entityManager"
+		class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
+
+	<bean id="connector" class="com.cs.layer4.persistence.business.MySqlAdapter"/>
+	
+	<bean id="dbpath" class="java.lang.String">
+		<constructor-arg type="String"
+			value="testDB/test" />
+	</bean>
+	
+	<!-- <bean id="attributeStrategy" class="com.cs.layer3.repository.business.extension.strategy.mysql.MySQLAttributeStrategy"/>
+	<bean id="entityStrategy" class="com.cs.layer3.repository.business.extension.strategy.mysql.MySQLEntityStrategy"/>
+	<bean id="clazzStrategy" class="com.cs.layer3.repository.business.extension.strategy.mysql.MySQLClazzStrategy"/> -->
+	
+	<bean id="attributeStrategy" class="com.cs.layer3.repository.business.extension.strategy.mysql.MySQLAttributeStrategy"/>
+	<bean id="entityStrategy" class="com.cs.layer3.repository.business.extension.strategy.mysqlmappped.MySQLMappedEntityStrategy"/>
+	<bean id="clazzStrategy" class="com.cs.layer3.repository.business.extension.strategy.mysqlmappped.MySQLMappedClazzStrategy"/>
+</beans>
